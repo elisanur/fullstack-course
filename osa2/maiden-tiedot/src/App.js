@@ -58,27 +58,29 @@ const Language = ({ language }) => {
   )
 }
 
-/* const Weather = ({ weather }) => {
+const Weather = ({ weather }) => {
   console.log('in Weather...', weather)
+  if (weather.length === 0)
+    return null
 
   return (
     <div>
-      <p>temperature: {weather.current.temperature}</p>
-      <p>wind: {weather.current.wind_speed}</p>
+      <p>temperature: {weather.current.temperature} c</p>
+      <p>wind: {weather.current.wind_speed} km/h</p>
     </div>
   )
 }
 
-const WeatherInfo = ({searchWeather, city}) => {
+const WeatherInfo = ({ searchWeather, city }) => {
   searchWeather(city)
   return (<p></p>)
-} */
+}
 
 function App() {
 
   const [filter, setFilter] = useState('')
   const [countries, setCountries] = useState([])
-/*   const [weather, setWeather] = useState([]) */
+  const [weather, setWeather] = useState([])
 
   useEffect(() => {
     axios
@@ -90,15 +92,15 @@ function App() {
 
 
 
-/*   const searchWeather = ({ city }) => {
-    console.log('city....', city)
-    
-    useEffect(()=> {
-      axios
+  const searchWeather = ({ city }) => {
+    if (weather.length !== 0 && weather.city == city)
+      return null
+
+    axios
       .get(`http://api.weatherstack.com/current?access_key=d03a86202c80d74d441b227812ee67ec&query=${city}`)
       .then(response => {
         console.log('response data', response.data)
-        setWeather(response.data)
+        setWeather({...response.data, city})
       })
       .then(() => {
         return (
@@ -107,9 +109,9 @@ function App() {
       })
 
     console.log('weather...', weather)
-    });
-    
-  } */
+
+
+  }
 
 
   const handleFilterChange = (event) => setFilter(event.target.value)
@@ -124,6 +126,7 @@ function App() {
       const country = filterResults[0]
       const city = country.capital
       console.log('city...', city)
+      searchWeather({ city })
       return (
         <div>
           <h1>{country.name}</h1>
@@ -136,10 +139,7 @@ function App() {
           <p></p>
           <img src={country.flag} width='300' alt='' ></img>
           <p>Weather in {city}</p>
-          
-  
-     
-
+          <Weather weather={weather} />
         </div>
       )
     } else {
